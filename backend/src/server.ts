@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 //import local
-import { main } from "./db.js";
+import { main } from "./helper/db.js";
 import { errorMW } from "./middlewares";
 
 //types
