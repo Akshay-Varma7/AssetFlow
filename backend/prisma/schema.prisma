@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql",
+  url = env("DATABASE_URL")
+}
+enum Role {
+  Admin
+  Asset_Manager
+  Department_Head
+  Employee
+};
+//doesnt grow like departments-appn logic on top of this
+
+//namw Type? @constraint-val/func //? if optional
+model User {
+  id Int @id @default(autoincrement()) //primary key 1,2.. // id String @id @deafult(auto()) like mongoose id
+  username String 
+  email String @unique
+  password String
+  role Role @default(Employee) //from enum
+  department Department @unique 
+}//1 dep
+
+model Department {
+  id Int @id @default(autoincrement())
+  name String @unique
+  head String 
+  parent_department Department?
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  name String @unique
+}
+
+//asset->allocation
+model Asset {
+  id Int @id @default(autoincrement()) 
+  name String
+  category Category @unique
+  missing Boolean @default(false)
+}//category unique
+
+enum Allocation_Approval_Status {
+  pending
+  allocated
+  rejected
+}
+model Allocation {//-> for maintanance or assigning-goodie-func?
+  id Int @id @default(autoincrement())
+  asset Asset @unique //tag-populated tht here/can custom bring
+  allocated_to User @unique
+  reason String?
+  allocated_date DateTime @default(now())
+  return_date DateTime? //if ntg auto null without default
+  //if any allocation record exists where return_data is null then allocated//otherwise not
+
+  status Allocation_Approval_Status
+
+  location String
+} 
+//resource->booking
+model Resource {
+  id Int @id @default(autoincrement())
+  name String @unique
+}
+
+model Booking {
+  id Int @id @default(autoincrement())
+  resource Resource @unique
+  start_time DateTime
+  end_time DateTime
+}
+
+enum Maintanance_Status {
+  pending
+  approved
+  rejected
+
+  in_progress
+  resolved
+  
+}
+//maintanance -resource,asset?
+model Maintanance {
+  id Int @id @default(autoincrement())
+  asset Asset //reference
+
+  technician_name String? //out
+
+  status Maintanance_Status
+}
+
+enum Audit_Status {
+  pending
+  //results
+  verified
+  missing
+  damage
+}
+//Audit-asset
+model Audit {
+  id Int @id @default(autoincrement())
+  asset Asset
+  //2 things :location and situation
+  expected_location String
+  status Audit_Status//if missing change missing state in User
+}
+//after audit -> maintanance //then audit one by one asset or resource
