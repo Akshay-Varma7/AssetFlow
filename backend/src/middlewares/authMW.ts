@@ -17,11 +17,12 @@ export const authMW = asyncHandler((req: AuthRequest,res: Response,next: NextFun
     }
 
     const decoded = jwt.verify(token,JWT_SECRET) as JwtPayload;//as & not decoded: JwtPayload 
+    //throw error if fail 
     //ntg or obj/string
     if(!decoded){
         throw new ApiError(403,"Invalid Token",true);
     }
-    req.username = decoded.username;
+    req.user = decoded;//.username and .roles
 
     next();
 })
