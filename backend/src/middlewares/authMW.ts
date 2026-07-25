@@ -7,22 +7,22 @@ import { asyncHandler } from "../helper/asyncHandler";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-export const authMW = asyncHandler((req: AuthRequest,res: Response,next: NextFunction)=>{
+export const authMW = (req: AuthRequest,res: Response,next: NextFunction)=>{
     const token = req.cookies?.token;
 
     //throw is captured by asyncHandler
     if(!token){
-        // return res.status(404).json({message: "UnAuthorized"});//instead of after return 
-        throw new ApiError(401,"UnAuthorized",true);
+        return res.status(401).json({message: "UnAuthorized", isOperational: true});//instead of after return 
+        // throw new ApiError(401,"UnAuthorized",true);
     }
 
     const decoded = jwt.verify(token,JWT_SECRET) as JwtPayload;//as & not decoded: JwtPayload 
     //throw error if fail 
     //ntg or obj/string
     if(!decoded){
-        throw new ApiError(403,"Invalid Token",true);
+        return res.status(403).json({message: "Invalid Token", isOperational: true});
     }
-    req.user = decoded;//.username and .roles
+    req.user = decoded;//.username and .roles and .userId
 
     next();
-})
+}

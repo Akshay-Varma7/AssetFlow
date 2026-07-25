@@ -1,0 +1,1 @@
+export { getDeptS , createDeptS , renameDeptS , deleteDeptS } from "./department";

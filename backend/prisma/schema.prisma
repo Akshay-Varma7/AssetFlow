@@ -1,3 +1,5 @@
+/*from this if : npx prisma generate - can give ts types from @prisma/client*/
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -12,6 +14,7 @@ datasource db {
   provider = "postgresql",
   url = env("DATABASE_URL")
 }
+
 enum Role {
   Admin
   Asset_Manager
@@ -26,15 +29,20 @@ model User {
   username String 
   email String @unique
   password String
-  roles Role[] @default(Employee) //from enum
+  roles Role[] @default([Employee]) 
   department Department @unique 
 }//1 dep
 
-model Department {
+enum Department_Status {
+  Active,
+  Inactive
+}
+model Department {//required means without ?
   id Int @id @default(autoincrement())
-  name String @unique
-  head String 
+  department_name String @unique
+  head User
   parent_department Department?
+  status Department_Status @default(Active)
 }
 
 model Category {
