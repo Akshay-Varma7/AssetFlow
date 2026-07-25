@@ -1,1 +1,2 @@
-export { getDeptS , createDeptS , renameDeptS , deleteDeptS } from "./department";
+export { Department } from "./department";
+export { User } from "./user";

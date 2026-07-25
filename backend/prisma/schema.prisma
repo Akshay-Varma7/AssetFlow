@@ -26,7 +26,7 @@ enum Role {
 //namw Type? @constraint-val/func //? if optional
 model User {
   id Int @id @default(autoincrement()) //primary key 1,2.. // id String @id @deafult(auto()) like mongoose id
-  username String 
+  username String @unique//unique imp:as in signin**
   email String @unique
   password String
   roles Role[] @default([Employee]) 
