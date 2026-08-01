@@ -1,6 +1,6 @@
 import { AuthRequest } from "../types";
 import { Response ,NextFunction } from "express";
-import type Role = require("../types");
+import { Role } from "../types";
 
 //in router
 export const accessMW = (...allowedRoles : Role[])=>{
