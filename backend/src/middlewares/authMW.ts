@@ -1,7 +1,7 @@
 //FN-> arg and return
 //var 1.inherited(from fn args , 1st defined reasign,lib) 2.US -- define or force
 import jwt from "jsonwebtoken";
-import { AuthRequest , JwtPayload } from "../types";//from index.ts by def
+import { AuthRequest , JwtPayload } from "../types/index.ts";//from index.ts by def
 import { Response ,NextFunction } from "express";
 import { asyncHandler } from "../helper/asyncHandler";
 

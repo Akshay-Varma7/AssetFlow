@@ -6,15 +6,15 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 //generator, datasource , model
-
+//main is 2 entities btw if 2 make reln name
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql",
-  url = env("DATABASE_URL")
+  provider = "postgresql"
+  // url = env("DATABASE_URL")-WHILE making an instance
 }
 
 //***whenever type as a TABLE_NAME means a virtual relation -> hence going to have a relation(fields,relation) or [] for back
@@ -23,7 +23,7 @@ enum Role {
   Asset_Manager
   Department_Head
   Employee
-};
+}
 //doesnt grow like departments-appn logic on top of this
 
 //namw Type? @constraint-val/func //? if optional
@@ -37,11 +37,13 @@ model User {
   //admin free from all depts=
   //r1= 1-n
   deptId Int
-  department Department @relation(fields: [deptId], references: [id])
+  department Department @relation(name: "DepartmentMembers",fields: [deptId], references: [id])
+
+  headOf Department @relation(name: "DepartmentHead")
 }//1 dep
 
 enum Department_Status {
-  Active,
+  Active
   Inactive
 }
 model Department {//required means without ?
@@ -50,15 +52,18 @@ model Department {//required means without ?
 
   //a seperate r2-only 1 user as head for 1 dept= 1-1(belongsto) -> no rev reln
   headId Int @unique
-  head User @relation(fields: [headId],references: [id]) 
+  head User @relation(name: "DepartmentHead" ,fields: [headId],references: [id]) 
+  
   //self r3= 1-1 -> no rev reln
   parent_deptId Int?//val
-  parent_department Department? @relation(fields: [parent_deptId],references: [id])//reln
+  parent_department Department? @relation(name: "DepartmentParent",fields: [parent_deptId],references: [id])//reln
 
   status Department_Status @default(Active)
 
   //for reverse querying-3
-  users User[]
+  members User[] @relation(name: "DepartmentMembers")
+
+  parOf Department @relation(name: "DepartmentParent")
 }
 
 model Category {
@@ -81,11 +86,11 @@ model Asset {
   missing Boolean @default(false)
 
   //reverse- allocation history
-  allocations Allocation[]
+  allocations Allocation[] @relation(name: "AllocatedAsset")
   //reverse- maintanance history
-  maintainances Maintanance[]
+  maintainances Maintanance[] @relation(name: "MaintananceAsset")
   //reverse- audits history
-  audits Audit[]
+  audits Audit[] @relation(name: "AuditAsset")
 }//category unique
 
 enum Allocation_Approval_Status {
@@ -98,7 +103,7 @@ model Allocation {//-> for maintanance or assigning-goodie-func?
 
   //r5=m:1
   assetId Int
-  asset Asset @relation(fields: [assetId],references: [id])//tag-populated tht here/can custom bring-shldnt be unq as may have in history
+  asset Asset @relation(name: "AllocatedAsset",fields: [assetId],references: [id])//tag-populated tht here/can custom bring-shldnt be unq as may have in history
   
   //ts imp as in runtime need not worry abt if string comes and .key error in runtime
   //write reverse in 1:m or 1-1 only if u'd ever access it such way
@@ -147,7 +152,7 @@ model Maintanance {
   id Int @id @default(autoincrement())
   //r8:m:1
   assetId Int
-  asset Asset @relation(fields: [assetId],references: [id])//reference
+  asset Asset @relation(name: "MaintananceAsset",fields: [assetId],references: [id])//reference
 
   technician_name String? //out
 
@@ -167,7 +172,7 @@ model Audit {
 
   //r9 = m:1
   assetId Int
-  asset Asset @relation(fields: [assetId],references: [id])
+  asset Asset @relation(name: "AuditAsset",fields: [assetId],references: [id])
 
   //2 things :location and situation
   expected_location String

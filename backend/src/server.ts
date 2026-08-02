@@ -1,14 +1,14 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config();//or import dotenv/config ->avaiable globally in project from this folder to access
 
-//import local
+//import local-js is a superset of ts
 // import { main } from "./helper/db.js";
-import { errorMW } from "./middlewares";
+import { errorMW } from "./middlewares/index.ts";
 
 //router
-import { deptRouter } from "./routes";
+import { deptRouter } from "./routes/index.ts";
 //types
 
 const app = express();//that obj is const but prop can change

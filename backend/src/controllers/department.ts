@@ -3,7 +3,7 @@ import { asyncHandler } from "../helper/asyncHandler";
 import { Department } from "../services";
 
 export const getDeptC = asyncHandler(async (req,res)={
-    const departments = await Department.getDeptS();//future: related to one org
+    const departments: = await Department.getDeptS();//future: related to one org
 
     res.status(200).json(departments);
 
