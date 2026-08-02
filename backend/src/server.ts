@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 //import local
-import { main } from "./helper/db.js";
+// import { main } from "./helper/db.js";
 import { errorMW } from "./middlewares";
 
 //router
@@ -15,9 +15,9 @@ const app = express();//that obj is const but prop can change
 
 //defining variables
 const port:number = process.env.port;
-const PG_URL:string = process.env.PG_URL;
 
-main();
+// const DATABASE_URL:string = process.env.DATABASE_URL;-NO NEED
+// main();-no need auto when 1 query runs->if want manual connect and disconect maybe?
 
 //mw
 app.use(express.json());

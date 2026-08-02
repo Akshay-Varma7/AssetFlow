@@ -5,6 +5,8 @@
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
+//generator, datasource , model
+
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -15,6 +17,7 @@ datasource db {
   url = env("DATABASE_URL")
 }
 
+//***whenever type as a TABLE_NAME means a virtual relation -> hence going to have a relation(fields,relation) or [] for back
 enum Role {
   Admin
   Asset_Manager
@@ -30,7 +33,11 @@ model User {
   email String @unique
   password String
   roles Role[] @default([Employee]) 
-  department Department @unique 
+
+  //admin free from all depts=
+  //r1= 1-n
+  deptId Int
+  department Department @relation(fields: [deptId], references: [id])
 }//1 dep
 
 enum Department_Status {
@@ -40,22 +47,45 @@ enum Department_Status {
 model Department {//required means without ?
   id Int @id @default(autoincrement())
   department_name String @unique
-  head User
-  parent_department Department?
+
+  //a seperate r2-only 1 user as head for 1 dept= 1-1(belongsto) -> no rev reln
+  headId Int @unique
+  head User @relation(fields: [headId],references: [id]) 
+  //self r3= 1-1 -> no rev reln
+  parent_deptId Int?//val
+  parent_department Department? @relation(fields: [parent_deptId],references: [id])//reln
+
   status Department_Status @default(Active)
+
+  //for reverse querying-3
+  users User[]
 }
 
 model Category {
   id Int @id @default(autoincrement())
   name String @unique
+
+  //reverse relation
+  assets Asset[]
 }
 
 //asset->allocation
 model Asset {
   id Int @id @default(autoincrement()) 
   name String
-  category Category @unique
+
+ //r4=category for sure= m-1
+  categoryId Int
+  category Category @relation(fields: [categoryId],references: [id])
+
   missing Boolean @default(false)
+
+  //reverse- allocation history
+  allocations Allocation[]
+  //reverse- maintanance history
+  maintainances Maintanance[]
+  //reverse- audits history
+  audits Audit[]
 }//category unique
 
 enum Allocation_Approval_Status {
@@ -65,8 +95,17 @@ enum Allocation_Approval_Status {
 }
 model Allocation {//-> for maintanance or assigning-goodie-func?
   id Int @id @default(autoincrement())
-  asset Asset @unique //tag-populated tht here/can custom bring
-  allocated_to User @unique
+
+  //r5=m:1
+  assetId Int
+  asset Asset @relation(fields: [assetId],references: [id])//tag-populated tht here/can custom bring-shldnt be unq as may have in history
+  
+  //ts imp as in runtime need not worry abt if string comes and .key error in runtime
+  //write reverse in 1:m or 1-1 only if u'd ever access it such way
+  //r6=m:1-no need rev
+  userId Int
+  allocated_to User @relation(fields: [userId],references: [id])
+
   reason String?
   allocated_date DateTime @default(now())
   return_date DateTime? //if ntg auto null without default
@@ -80,15 +119,20 @@ model Allocation {//-> for maintanance or assigning-goodie-func?
 model Resource {
   id Int @id @default(autoincrement())
   name String @unique
+  //rev reln
+  bookings Booking[]
 }
 
 model Booking {
   id Int @id @default(autoincrement())
-  resource Resource @unique
+  //r7=m:1
+  resourceId Int
+  resource Resource @relation(fields: [resourceId],references: [id])
+
   start_time DateTime
   end_time DateTime
 }
-
+//m:1(one record can be matched by many)
 enum Maintanance_Status {
   pending
   approved
@@ -101,7 +145,9 @@ enum Maintanance_Status {
 //maintanance -resource,asset?
 model Maintanance {
   id Int @id @default(autoincrement())
-  asset Asset //reference
+  //r8:m:1
+  assetId Int
+  asset Asset @relation(fields: [assetId],references: [id])//reference
 
   technician_name String? //out
 
@@ -118,7 +164,11 @@ enum Audit_Status {
 //Audit-asset
 model Audit {
   id Int @id @default(autoincrement())
-  asset Asset
+
+  //r9 = m:1
+  assetId Int
+  asset Asset @relation(fields: [assetId],references: [id])
+
   //2 things :location and situation
   expected_location String
   status Audit_Status//if missing change missing state in User
