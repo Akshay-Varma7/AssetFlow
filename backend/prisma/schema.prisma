@@ -39,7 +39,9 @@ model User {
   deptId Int
   department Department @relation(name: "DepartmentMembers",fields: [deptId], references: [id])
 
-  headOf Department @relation(name: "DepartmentHead")
+  //reverse relation cannot be forced to exist for sure-but it is being 
+  headOf Department? @relation(name: "DepartmentHead")
+  allocated_to Allocation[]//no need name
 }//1 dep
 
 enum Department_Status {
@@ -54,7 +56,7 @@ model Department {//required means without ?
   headId Int @unique
   head User @relation(name: "DepartmentHead" ,fields: [headId],references: [id]) 
   
-  //self r3= 1-1 -> no rev reln
+  //self r3= m:1 -> no rev reln***** on bs its new concepts to implement optional reln
   parent_deptId Int?//val
   parent_department Department? @relation(name: "DepartmentParent",fields: [parent_deptId],references: [id])//reln
 
@@ -63,7 +65,11 @@ model Department {//required means without ?
   //for reverse querying-3
   members User[] @relation(name: "DepartmentMembers")
 
-  parOf Department @relation(name: "DepartmentParent")
+  //-this side: who is par-hence that side: who are children of this par-many
+  // wrong not one: parOf Department @relation(name: "DepartmentParent")
+
+  // This field is technically "optional" in behavior because the list can be empty.- []
+  child_departments Department[] @relation(name: "DepartmentParent")
 }
 
 model Category {

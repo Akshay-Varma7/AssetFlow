@@ -3,7 +3,7 @@ import { AuthRequest } from "../types/expressTypes";
 import { Error ,Response , NextFunction } from "express";
 
 //or errorMw : ErrorRequestHandler = ()=>{} //already defined but req.username error
-export errorMw = (err: Error,req: AuthRequest,res: Response,next: NextFunction)=>{
+export const errorMw = (err: Error,req: AuthRequest,res: Response,next: NextFunction)=>{
     res.status(500).json({message: err.message || "error"});
     //dif and is operational?
 }

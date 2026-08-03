@@ -4,8 +4,7 @@ exports.User = void 0;
 const prisma_1 = require("../config/prisma");
 exports.User = {
     signupS: async (username, hashPswd) => {
-        await result;
-        await prisma_1.Prisma.User.create({
+        const result = await prisma_1.Prisma.User.create({
             data: {
                 username: username,
                 password: hashPswd
@@ -14,8 +13,7 @@ exports.User = {
         return result;
     },
     existS: async (username) => {
-        await result;
-        prisma_1.Prisma.User.findUnique({
+        const result = prisma_1.Prisma.User.findUnique({
             where: {
                 username
             }
