@@ -8,7 +8,7 @@ dotenv.config();//or import dotenv/config ->avaiable globally in project from th
 import { errorMW } from "./middlewares/index.ts";
 
 //router
-import { deptRouter } from "./routes/index.ts";
+import { deptRouter , categoryRouter , personRouter } from "./routes/index.ts";
 //types
 
 const app = express();//that obj is const but prop can change
@@ -25,6 +25,11 @@ app.use(cookieParser());
 
 //routes
 app.use("/department",deptRouter);
+
+app.use("/category",categoryRouter);
+
+app.use("/person",personRouter);
+
 
 app.use(errorMW);
 

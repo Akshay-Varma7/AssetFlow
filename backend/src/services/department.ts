@@ -1,9 +1,13 @@
 //balance btw writing 40 and new learning 60
+// import type Department = require("../generated/prisma/browser");-browser?
+// import type browser = require("../generated/prisma/browser");
 import { Prisma } from "../config/prisma";
+import { Department } from "../generated/prisma/client";
 
 export const Department = {
 
-    getDeptS : async ()=>{
+    //func contract-return and input
+    getDeptS : async () : Promise<Department[]> =>{//empty [] acceptable
         const result = await  Prisma.Department.findMany({// or findMany()
             include: {
                 head: true
@@ -11,7 +15,7 @@ export const Department = {
         })
         return result;
     },
-    createDeptS : async (department_name,head,parent_department)=>{
+    createDeptS : async (department_name,head,parent_department) : Promise<Department | null> =>{
         const result = await  Prisma.Department.create({
             data: {
                 department_name: department_name,
@@ -21,7 +25,7 @@ export const Department = {
         })
         return result;
     },
-    renameDeptS : async (deptId,newDeptName)=>{
+    renameDeptS : async (deptId,newDeptName) : Promise<Department | null> =>{
         const result = await  Prisma.Department.update({
             where: {
                 id: deptId
@@ -32,10 +36,10 @@ export const Department = {
         })
         return result;
     },
-    deleteDeptS : async (deptId)=>{
+    deleteDeptS : async (Id) : Promise<Department | null> =>{
         const result = await Prisma.Department.delete({
             where: {
-                id: deptId
+                id: Id
             },
         })
         return result;

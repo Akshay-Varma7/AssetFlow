@@ -36,6 +36,7 @@ model User {
 
   //admin free from all depts=
   //r1= 1-n
+  //dept id default to general->make this record form by default
   deptId Int
   department Department @relation(name: "DepartmentMembers",fields: [deptId], references: [id])
 
